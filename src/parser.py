@@ -24,7 +24,11 @@ def get_all_exam_dates(file_pattern):
                 # 텍스트 추출
                 text = page.extract_text()
                 if text:
-                    found_dates.update(date_pattern.findall(text))
+                    # 1. 패턴에 맞는 형태 모두 찾기
+                    matches = date_pattern.findall(text)
+                    # 2. '14.6'은 제외
+                    filtered_matches = [d for d in matches if d != '14.6']
+                    found_dates.update(filtered_matches)
 
     # 정렬 로직 (연도.월 순서)
     sorted_dates = sorted(
@@ -37,7 +41,6 @@ if __name__ == "__main__":
     # PDF 파일 경로 (data 폴더 안에 넣어두세요)
     PATH_PATTERN = "data/*.pdf"
     result = get_all_exam_dates(PATH_PATTERN)
-    print(f"\n[+] 추출된 고유 날짜: {result}")
     
     print("\n--- 추출된 날짜 리스트 ---")
     print(result)
