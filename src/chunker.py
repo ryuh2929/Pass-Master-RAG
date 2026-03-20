@@ -75,6 +75,9 @@ def extract_full_text(file_pattern):
 
     # 와일드카드 패턴에 맞는 모든 파일 경로 리스트 가져오기
     pdf_files = glob.glob(file_pattern)
+
+    # 1단 구성 페이지 리스트 (0부터 시작하는 인덱스)
+    single_col_pages = {8, 9, 10, 11, 21, 22, 23, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 98}
     
     if not pdf_files:
         print(f"[!] 파일을 찾을 수 없습니다: {file_pattern}")
@@ -82,35 +85,27 @@ def extract_full_text(file_pattern):
 
     print(f"[*] 총 {len(pdf_files)}개의 파일을 찾았습니다: {pdf_files}")
     
-    for pdf_path in pdf_files:# 변수명을 pdf_path로 명확히 수정
-        # pdfplumber.open()으로 파일을 먼저 열어야 합니다!
+    for pdf_path in pdf_files:
+        # pdfplumber.open()으로 파일을 먼저 열어서 페이지 수를 확인한 후, 각 페이지마다 1단 또는 2단으로 텍스트를 추출
         with pdfplumber.open(pdf_path) as pdf:
             total_pages = len(pdf.pages)
             print(f"[*] '{pdf_path}' 분석 중 (총 {total_pages}페이지)...")
-            
-            for i, page in enumerate(pdf.pages):
-                # 페이지의 너비와 높이 구하기
-                width = page.width
-                height = page.height
-                
-                # 좌측 절반 크롭 (x0, y0, x1, y1)
-                left_bbox = (0, 0, width / 2, height)
-                left_page = page.within_bbox(left_bbox)
-                left_text = left_page.extract_text() or ""
-                
-                # 우측 절반 크롭
-                right_bbox = (width / 2, 0, width, height)
-                right_page = page.within_bbox(right_bbox)
-                right_text = right_page.extract_text() or ""
-                
-                # 순서대로 합치기 (좌측 -> 우측)
-                full_text += f"\n--- PAGE {i+1} LEFT ---\n{left_text}"
-                full_text += f"\n--- PAGE {i+1} RIGHT ---\n{right_text}"
-                
-                if (i + 1) % 20 == 0:
-                    print(f"[*] {i+1}페이지 2단 분리 추출 중...")
 
-                # 진행률 표시 (119페이지라 시간이 좀 걸릴 수 있음)
+            for i, page in enumerate(pdf.pages):
+                # 1단 구성 페이지인 경우
+                if i in single_col_pages:
+                    page_text = page.extract_text() or ""
+                    full_text += f"\n{page_text}\n"
+                # 2단 구성 페이지인 경우
+                else:
+                    # 페이지의 너비와 높이 구하기
+                    width, height = page.width, page.height
+                    # 좌측과 우측을 각각 크롭해서 텍스트 추출
+                    left = page.within_bbox((0, 0, width / 2, height)).extract_text() or ""
+                    right = page.within_bbox((width / 2, 0, width, height)).extract_text() or ""
+                    full_text += f"\n{left}\n{right}\n"
+                
+                # 진행률 표시 (20페이지마다 또는 마지막 페이지일 때)
                 if (i + 1) % 20 == 0 or (i + 1) == total_pages:
                     print(f"[*] 진행도: {i + 1}/{total_pages} 페이지 완료")
 
