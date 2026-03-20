@@ -1,6 +1,5 @@
 import pdfplumber
 import re
-import os
 import glob
 
 def get_all_exam_dates(file_pattern):
@@ -44,4 +43,4 @@ if __name__ == "__main__":
     
     print("\n--- 추출된 날짜 리스트 ---")
     print(result)
-    print("--------------------------")
+    print(f"------------------총 {len(result)}개-")
