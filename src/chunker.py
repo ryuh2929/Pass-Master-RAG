@@ -1,6 +1,8 @@
 import pdfplumber
 import glob
 import re
+import json
+import os
 
 def chunk_pdf_text(full_text, valid_dates):
     """
@@ -135,19 +137,40 @@ def extract_full_text(file_pattern):
     return full_text
 
 if __name__ == "__main__":
-    # PDF 파일 경로 (data 폴더 안에 넣어두세요)
+    # 1. PDF 파일 경로 설정 (data 폴더 안에 넣어두세요)
     PATH_PATTERN = "data/*.pdf"
-    result = extract_full_text(PATH_PATTERN)
+    OUTPUT_DIR = "data"
+    OUTPUT_FILE = os.path.join(OUTPUT_DIR, "processed_chunks.json")
+
+    # 2. 폴더가 없으면 생성
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+
+    # 3. 텍스트 추출 및 청킹 실행
+    print("[*] PDF 텍스트 추출 및 청킹 프로세스 시작...")
+    result_text = extract_full_text(PATH_PATTERN)
 
     print("\n--- 추출된 전체 텍스트 일부 ---")
-    print(result[:100])  # 처음 100자만 출력 (디버깅용)
-
+    print(result_text[:100])  # 처음 100자만 출력 (디버깅용)
+    
+    # 유효 출제 날짜 세트
     valid_dates = set(['20.5', '20.6', '20.7', '20.8', '20.9', '20.10', '20.11', '21.3', '21.4', '21.5', '21.7', '21.8', '21.10', '22.3', '22.4', '22.5', '22.7', '22.10', '23.2', '23.4', '23.5', '23.7', '23.10', '24.2', '24.4', '24.5', '24.7', '24.10', '25.2', '25.4', '25.5', '25.7', '25.8', '25.11'])
 
-    chunk = chunk_pdf_text(result, valid_dates)
+    chunks = chunk_pdf_text(result_text, valid_dates)
+    
+    # 4. JSON 저장 (ensure_ascii=False 필수: 한글 깨짐 방지)
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(chunks, f, ensure_ascii=False, indent=2)
+
+    # 5. 최종 데이터 분석 결과 출력
+    print("\n" + "="*30)
+    print(f"[*] 처리 완료! 총 {len(chunks)}개의 섹션이 저장되었습니다.")
+    print(f"[*] 저장 위치: {OUTPUT_FILE}")
+    print("="*30)
+
     print("\n--- 첫 번째 청크 예시 ---")
-    if chunk:   # 청크가 존재할 때만 출력
-        print(chunk[0])
-        print(f"총 {len(chunk)}개")
+    if chunks:   # 청크가 존재할 때만 출력
+        print(chunks[0])
+        print(f"총 {len(chunks)}개")
     else:
         print("[!] 청크가 생성되지 않았습니다.")
