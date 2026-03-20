@@ -133,5 +133,6 @@ if __name__ == "__main__":
     print("\n--- 첫 번째 청크 예시 ---")
     if chunk:   # 청크가 존재할 때만 출력
         print(chunk[0])
+        print(f"총 {len(chunk)}개")
     else:
         print("[!] 청크가 생성되지 않았습니다.")
