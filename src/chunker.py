@@ -1,6 +1,8 @@
 import pdfplumber
 import glob
 import re
+import json
+import os
 
 def chunk_pdf_text(full_text, valid_dates):
     """
@@ -54,9 +56,10 @@ def chunk_pdf_text(full_text, valid_dates):
         
         # 결과 딕셔너리 생성
         chunks.append({
-            "document": section_text,  # LLM이 읽을 본문 (대단원 정보는 나중에 추가 가능)
+            "document": section_text,  # LLM이 읽을 본문
             "metadata": {
                 "id": item_id,
+                "chapter": get_chapter_name(item_id),
                 "title": title,
                 "importance": importance,
                 "exam_dates": actual_exam_dates,
@@ -66,6 +69,25 @@ def chunk_pdf_text(full_text, valid_dates):
         })
 
     return chunks
+
+def get_chapter_name(item_id_str):
+    try:
+        item_id = int(item_id_str)
+        if 1 <= item_id <= 33: return "1장 요구사항 확인"
+        elif 34 <= item_id <= 84: return "2장 데이터 입출력 구현"
+        elif 85 <= item_id <= 88: return "3장 통합 구현"
+        elif 89 <= item_id <= 116: return "4장 서버 프로그램 구현"
+        elif 117 <= item_id <= 126: return "5장 인터페이스 구현"
+        elif 127 <= item_id <= 130: return "6장 화면 설계"
+        elif 131 <= item_id <= 151: return "7장 애플리케이션 테스트 관리"
+        elif 152 <= item_id <= 174: return "8장 SQL 응용"
+        elif 175 <= item_id <= 210: return "9장 소프트웨어 개발 보안 구축"
+        elif 211 <= item_id <= 234: return "10장 프로그래밍 언어 활용"
+        elif 235 <= item_id <= 291: return "11장 응용 SW 기초 기술 활용"
+        elif 292 <= item_id <= 301: return "12장 제품 소프트웨어 패키징"
+        else: return "기타"
+    except ValueError:
+        return "알 수 없음"
 
 def extract_full_text(file_pattern):
     """
@@ -115,19 +137,40 @@ def extract_full_text(file_pattern):
     return full_text
 
 if __name__ == "__main__":
-    # PDF 파일 경로 (data 폴더 안에 넣어두세요)
+    # 1. PDF 파일 경로 설정 (data 폴더 안에 넣어두세요)
     PATH_PATTERN = "data/*.pdf"
-    result = extract_full_text(PATH_PATTERN)
+    OUTPUT_DIR = "data"
+    OUTPUT_FILE = os.path.join(OUTPUT_DIR, "processed_chunks.json")
+
+    # 2. 폴더가 없으면 생성
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+
+    # 3. 텍스트 추출 및 청킹 실행
+    print("[*] PDF 텍스트 추출 및 청킹 프로세스 시작...")
+    result_text = extract_full_text(PATH_PATTERN)
 
     print("\n--- 추출된 전체 텍스트 일부 ---")
-    print(result[:100])  # 처음 100자만 출력 (디버깅용)
-
+    print(result_text[:100])  # 처음 100자만 출력 (디버깅용)
+    
+    # 유효 출제 날짜 세트
     valid_dates = set(['20.5', '20.6', '20.7', '20.8', '20.9', '20.10', '20.11', '21.3', '21.4', '21.5', '21.7', '21.8', '21.10', '22.3', '22.4', '22.5', '22.7', '22.10', '23.2', '23.4', '23.5', '23.7', '23.10', '24.2', '24.4', '24.5', '24.7', '24.10', '25.2', '25.4', '25.5', '25.7', '25.8', '25.11'])
 
-    chunk = chunk_pdf_text(result, valid_dates)
+    chunks = chunk_pdf_text(result_text, valid_dates)
+    
+    # 4. JSON 저장 (ensure_ascii=False 필수: 한글 깨짐 방지)
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        json.dump(chunks, f, ensure_ascii=False, indent=2)
+
+    # 5. 최종 데이터 분석 결과 출력
+    print("\n" + "="*30)
+    print(f"[*] 처리 완료! 총 {len(chunks)}개의 섹션이 저장되었습니다.")
+    print(f"[*] 저장 위치: {OUTPUT_FILE}")
+    print("="*30)
+
     print("\n--- 첫 번째 청크 예시 ---")
-    if chunk:   # 청크가 존재할 때만 출력
-        print(chunk[0])
-        print(f"총 {len(chunk)}개")
+    if chunks:   # 청크가 존재할 때만 출력
+        print(chunks[0])
+        print(f"총 {len(chunks)}개")
     else:
         print("[!] 청크가 생성되지 않았습니다.")
