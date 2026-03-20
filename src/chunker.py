@@ -7,32 +7,49 @@ def chunk_pdf_text(full_text, valid_dates):
     full_text: pdfplumber로 추출한 전체 텍스트
     valid_dates: 아까 추출한 34개의 기출 날짜 세트 (set)
     """
-    # 1. 소제목 패턴: 숫자3자리 + 제목 + 중요도(A/B/C)
-    # 예: 001 나선형 모형 B 
-    section_pattern = re.compile(r'(\d{3})\s+(.+?)\s+([A-C]?)(\n|$)')
-    
-    # 2. 섹션별로 쪼개기 위해 매칭되는 지점(index) 찾기
+
+    full_text = full_text.replace('\x07', ' ')
+    # 1. 소제목(001) 위치만 먼저 찾습니다. (이건 매우 빠릅니다)
+    section_pattern = re.compile(r'(\d{3})\s+(.+?)\s+([A-C])(?:\s|\n|$)')
     matches = list(section_pattern.finditer(full_text))
     chunks = []
 
     for i in range(len(matches)):
-        start_idx = matches[i].start()
-        # 다음 섹션이 있으면 거기까지, 없으면 끝까지
-        end_idx = matches[i+1].start() if i + 1 < len(matches) else len(full_text)
+        # 2. 이번 섹션의 시작점 결정
+        # 기본값은 소제목 시작점이지만, 그 윗부분(약 100자 정도)에 날짜가 있는지 확인합니다.
+        current_match_start = matches[i].start()
+        lookback_window = full_text[max(0, current_match_start-150):current_match_start]
         
-        # 해당 섹션의 전체 텍스트 (번호 + 제목 + 본문 포함)
+        # 윗부분에서 가장 먼저 나오는 날짜의 위치를 찾음
+        date_matches = list(re.finditer(r'\d{2}\.(?:1[0-2]|[1-9])', lookback_window))
+        if date_matches:
+            # 날짜가 있다면 그 날짜의 시작점으로 start_idx를 당깁니다.
+            start_idx = max(0, current_match_start - 150) + date_matches[0].start()
+        else:
+            start_idx = current_match_start
+
+        # 3. 끝점 결정 (다음 섹션의 시작점 혹은 전체 끝)
+        if i + 1 < len(matches):
+            next_match_start = matches[i+1].start()
+            # 다음 섹션 윗부분에 날짜가 있는지 또 확인해서 그 전까지만 끊음
+            next_lookback = full_text[max(0, next_match_start-150):next_match_start]
+            next_date_matches = list(re.finditer(r'\d{2}\.(?:1[0-2]|[1-9])', next_lookback))
+            if next_date_matches:
+                end_idx = max(0, next_match_start - 150) + next_date_matches[0].start()
+            else:
+                end_idx = next_match_start
+        else:
+            end_idx = len(full_text)
+        
         section_text = full_text[start_idx:end_idx].strip()
         
-        # 메타데이터 추출
+        # 메타데이터 추출 (matches[i] 그룹 사용)
         item_id = matches[i].group(1)
         title = matches[i].group(2).strip()
-        importance = matches[i].group(3).strip() or "N/A"
+        importance = matches[i].group(3).strip()
         
-        # 3. 본문 내 날짜 매핑 (세부 항목 날짜까지 싹 긁어모음)
-        # 아까 만든 date_pattern을 재사용하여 본문의 모든 날짜 추출
+        # 본문 내 날짜 추출 (이제 본문 안에 본인의 날짜가 포함되어 있음)
         found_in_section = set(re.findall(r'(?<!\d)\d{2}\.(?:1[0-2]|[1-9])(?!\d)', section_text))
-        
-        # 우리가 가진 34개 유효 날짜 리스트와 교집합 확인
         actual_exam_dates = sorted(list(found_in_section.intersection(valid_dates)))
         
         # 결과 딕셔너리 생성
@@ -92,13 +109,6 @@ def extract_full_text(file_pattern):
                 
                 if (i + 1) % 20 == 0:
                     print(f"[*] {i+1}페이지 2단 분리 추출 중...")
-                # 텍스트 추출
-                page_text = page.extract_text()
-                
-                if page_text:
-                    # 페이지 간 구분자 추가 (나중에 디버깅하기 쉬움)
-                    full_text += f"\n--- PAGE {i+1} ---\n" 
-                    full_text += page_text
 
                 # 진행률 표시 (119페이지라 시간이 좀 걸릴 수 있음)
                 if (i + 1) % 20 == 0 or (i + 1) == total_pages:
@@ -123,3 +133,5 @@ if __name__ == "__main__":
     print("\n--- 첫 번째 청크 예시 ---")
     if chunk:   # 청크가 존재할 때만 출력
         print(chunk[0])
+    else:
+        print("[!] 청크가 생성되지 않았습니다.")
