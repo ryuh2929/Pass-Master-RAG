@@ -54,9 +54,10 @@ def chunk_pdf_text(full_text, valid_dates):
         
         # 결과 딕셔너리 생성
         chunks.append({
-            "document": section_text,  # LLM이 읽을 본문 (대단원 정보는 나중에 추가 가능)
+            "document": section_text,  # LLM이 읽을 본문
             "metadata": {
                 "id": item_id,
+                "chapter": get_chapter_name(item_id),
                 "title": title,
                 "importance": importance,
                 "exam_dates": actual_exam_dates,
@@ -66,6 +67,25 @@ def chunk_pdf_text(full_text, valid_dates):
         })
 
     return chunks
+
+def get_chapter_name(item_id_str):
+    try:
+        item_id = int(item_id_str)
+        if 1 <= item_id <= 33: return "1장 요구사항 확인"
+        elif 34 <= item_id <= 84: return "2장 데이터 입출력 구현"
+        elif 85 <= item_id <= 88: return "3장 통합 구현"
+        elif 89 <= item_id <= 116: return "4장 서버 프로그램 구현"
+        elif 117 <= item_id <= 126: return "5장 인터페이스 구현"
+        elif 127 <= item_id <= 130: return "6장 화면 설계"
+        elif 131 <= item_id <= 151: return "7장 애플리케이션 테스트 관리"
+        elif 152 <= item_id <= 174: return "8장 SQL 응용"
+        elif 175 <= item_id <= 210: return "9장 소프트웨어 개발 보안 구축"
+        elif 211 <= item_id <= 234: return "10장 프로그래밍 언어 활용"
+        elif 235 <= item_id <= 291: return "11장 응용 SW 기초 기술 활용"
+        elif 292 <= item_id <= 301: return "12장 제품 소프트웨어 패키징"
+        else: return "기타"
+    except ValueError:
+        return "알 수 없음"
 
 def extract_full_text(file_pattern):
     """
