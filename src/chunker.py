@@ -66,12 +66,32 @@ def extract_full_text(file_pattern):
     print(f"[*] 총 {len(pdf_files)}개의 파일을 찾았습니다: {pdf_files}")
     
     for pdf_path in pdf_files:# 변수명을 pdf_path로 명확히 수정
-        # [수정 포인트] pdfplumber.open()으로 파일을 먼저 열어야 합니다!
+        # pdfplumber.open()으로 파일을 먼저 열어야 합니다!
         with pdfplumber.open(pdf_path) as pdf:
             total_pages = len(pdf.pages)
             print(f"[*] '{pdf_path}' 분석 중 (총 {total_pages}페이지)...")
             
             for i, page in enumerate(pdf.pages):
+                # 페이지의 너비와 높이 구하기
+                width = page.width
+                height = page.height
+                
+                # 좌측 절반 크롭 (x0, y0, x1, y1)
+                left_bbox = (0, 0, width / 2, height)
+                left_page = page.within_bbox(left_bbox)
+                left_text = left_page.extract_text() or ""
+                
+                # 우측 절반 크롭
+                right_bbox = (width / 2, 0, width, height)
+                right_page = page.within_bbox(right_bbox)
+                right_text = right_page.extract_text() or ""
+                
+                # 순서대로 합치기 (좌측 -> 우측)
+                full_text += f"\n--- PAGE {i+1} LEFT ---\n{left_text}"
+                full_text += f"\n--- PAGE {i+1} RIGHT ---\n{right_text}"
+                
+                if (i + 1) % 20 == 0:
+                    print(f"[*] {i+1}페이지 2단 분리 추출 중...")
                 # 텍스트 추출
                 page_text = page.extract_text()
                 
@@ -84,6 +104,8 @@ def extract_full_text(file_pattern):
                 if (i + 1) % 20 == 0 or (i + 1) == total_pages:
                     print(f"[*] 진행도: {i + 1}/{total_pages} 페이지 완료")
 
+    # 특수문자 제거 및 정제
+    full_text = full_text.replace('\x07', ' ')
     print(f"[*] 추출 완료! 총 글자 수: {len(full_text)}자")
     return full_text
 
