@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/venv,windows,python,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=venv,windows,python,visualstudiocode
 
+temp.py
 # --- Project Specific Custom Rules ---
 # PDF 원본 데이터 
 data/
