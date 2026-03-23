@@ -2,14 +2,19 @@ import json
 import os
 import chromadb
 from chromadb.utils import embedding_functions
-from openai import OpenAI
+from dotenv import load_dotenv
 
-# 1. 초기 설정
-API_KEY = "YOUR_OPENAI_API_KEY"  # 실제 키로 교체하거나 .env 사용 권장
-DB_PATH = "db/pass_master_db"
-DATA_PATH = "data/processed_chunks.json"
+# 1. .env 파일의 내용을 로드하고 os.getenv()를 통해 환경 변수를 가져옵니다.
+load_dotenv()
+
+API_KEY = os.getenv("OPENAI_API_KEY")
+DB_PATH = os.getenv("DB_PATH", "db/pass_master_db") # 기본값 설정 가능
+DATA_PATH = os.getenv("DATA_PATH", "data/processed_chunks.json")
 
 def ingest_data():
+    if not API_KEY:
+        print("[!] API 키가 설정되지 않았습니다. .env 파일을 확인하세요.")
+        return
     # 2. JSON 데이터 로드
     if not os.path.exists(DATA_PATH):
         print(f"[!] {DATA_PATH} 파일이 없습니다. 먼저 chunker.py를 실행하세요.")
@@ -17,6 +22,8 @@ def ingest_data():
 
     with open(DATA_PATH, "r", encoding="utf-8") as f:
         chunks = json.load(f)
+
+    print(f"[*] 환경 변수 로드 완료. DATA 경로: {DATA_PATH}")
 
     # 3. ChromaDB 및 임베딩 함수 설정 (OpenAI 모델 사용)
     # 비용이 가장 저렴하고 성능이 좋은 text-embedding-3-small 모델을 씁니다.
@@ -32,10 +39,26 @@ def ingest_data():
         embedding_function=openai_ef
     )
 
-    # 5. 데이터 준비
-    documents = [c["document"] for c in chunks]
-    metadatas = [c["metadata"] for c in chunks]
-    ids = [c["metadata"]["id"] for c in chunks]
+    # 5. 데이터 준비 및 메타데이터 정제
+    documents = []
+    metadatas = []
+    ids = []
+
+    for i, chunk in enumerate(chunks):
+        doc = chunk["document"]
+        meta = chunk["metadata"]
+        
+        # ChromaDB는 빈 리스트를 메타데이터로 받지 못함
+        if not meta.get("exam_dates") or len(meta["exam_dates"]) == 0:
+            meta["exam_dates"] = ["None"]
+            
+        documents.append(doc)
+        metadatas.append(meta)
+        
+        ids.append(str(meta["id"]))
+    # documents = [c["document"] for c in chunks]
+    # metadatas = [c["metadata"] for c in chunks]
+    # ids = [c["metadata"]["id"] for c in chunks]
 
     # 6. DB 저장 (Upsert: 없으면 추가, 있으면 업데이트)
     print(f"[*] {len(ids)}개의 조각을 벡터화하여 DB에 저장 중...")
