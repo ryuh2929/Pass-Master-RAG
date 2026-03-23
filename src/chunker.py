@@ -12,7 +12,7 @@ def chunk_pdf_text(full_text, valid_dates):
 
     full_text = full_text.replace('\x07', ' ')
     # 1. 소제목(001) 위치만 먼저 찾습니다. (이건 매우 빠릅니다)
-    section_pattern = re.compile(r'(\d{3})\s+(.+?)\s+([A-C])(?:\s|\n|$)')
+    section_pattern = re.compile(r'(?:^|\n)(\d{3})\s+(.+?)\s+([A-C])(?:\s|\n|$)')
     matches = list(section_pattern.finditer(full_text))
     chunks = []
 
@@ -68,7 +68,35 @@ def chunk_pdf_text(full_text, valid_dates):
             }
         })
 
-    return chunks
+        # [298-299번 섹션 분리 및 정제 패치]
+    final_chunks = []
+    for chunk in chunks:
+        # 298번에 299번 내용이 침범한 경우 (문자열 탐색)
+        if chunk["metadata"]["id"] == "298" and "299 C" in chunk["document"]:
+            # 1. 298번 본문에서 299번 시작 지점 전까지만 자르기
+            split_target = "340503 필기 25.8" # 299번 날짜 시작점 혹은 구분자
+            parts = chunk["document"].split(split_target)
+            chunk["document"] = parts[0].strip()
+            final_chunks.append(chunk)
+            
+            # 2. 누락된 299번 수동 생성
+            new_299 = {
+                "document": f"{split_target}{parts[1]}".strip() if len(parts) > 1 else "299번 본문 유실 확인 필요",
+                "metadata": {
+                    "id": "299",
+                    "chapter": "12장 제품 소프트웨어 패키징",
+                    "title": "소프트웨어 버전 관리 도구 - 분산 저장소 방식",
+                    "importance": "C",
+                    "exam_dates": ["21.5", "25.8"],
+                    "occurrence_count": 2,
+                    "is_practical": False
+                }
+            }
+            final_chunks.append(new_299)
+        else:
+            final_chunks.append(chunk)
+
+    return final_chunks
 
 def get_chapter_name(item_id_str):
     try:
