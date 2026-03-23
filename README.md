@@ -46,7 +46,7 @@ python3 ./src/main.py
 
 ## 🛠️ 그외 스크립트 설명
 
-`./src/parser.py`: 출제 날짜 추출 스크립트
+`./src/parser.py`: 출제 날짜 추출 스크립트 \n
 `search_test.py`: vector_store.py 실행 후 벡터화 확인 테스트 질문 (정상 답변: [1순위] ID: 201 '사회 공학' 이후 3순위까지 답변)
 
 ---
@@ -76,22 +76,6 @@ python3 ./src/main.py
 * **데이터 밀림 현상:** 섹션 구분 시 날짜 정보가 다음 섹션으로 넘어가는 문제를 인덱스 기반 슬라이싱과 윈도우 크기 조정(150자→100자)으로 해결.
 * **빈 텍스트 오류:** 데이터 전처리 과정에서 발생하는 공백 섹션을 사전 필터링하여 API 호출 에러 차단.
 * **ID 무결성:** `upsert` 시 ID를 문자열로 강제 변환하고 중복을 체크하여 DB 안정성 확보.
-
----
-
-## 📂 Project Structure
-```text
-Pass-Master-RAG/
-├── src/
-│   ├── chunker.py         # PDF 텍스트 파싱 및 JSON 생성
-│   ├── vector_store.py    # ChromaDB 데이터 입고 (Embedding)
-│   ├── search_test.py     # 검색 엔진 성능 테스트
-│   └── main.py            # 최종 RAG 챗봇 실행 파일
-├── data/
-│   └── processed_chunks.json
-├── db/                    # ChromaDB 저장소
-└── .env                   # API Key 및 경로 설정
-```
 
 ---
 
