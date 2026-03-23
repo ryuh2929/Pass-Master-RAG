@@ -39,10 +39,26 @@ def ingest_data():
         embedding_function=openai_ef
     )
 
-    # 5. 데이터 준비
-    documents = [c["document"] for c in chunks]
-    metadatas = [c["metadata"] for c in chunks]
-    ids = [c["metadata"]["id"] for c in chunks]
+    # 5. 데이터 준비 및 메타데이터 정제
+    documents = []
+    metadatas = []
+    ids = []
+
+    for i, chunk in enumerate(chunks):
+        doc = chunk["document"]
+        meta = chunk["metadata"]
+        
+        # ChromaDB는 빈 리스트를 메타데이터로 받지 못함
+        if not meta.get("exam_dates") or len(meta["exam_dates"]) == 0:
+            meta["exam_dates"] = ["None"]
+            
+        documents.append(doc)
+        metadatas.append(meta)
+        
+        ids.append(str(meta["id"]))
+    # documents = [c["document"] for c in chunks]
+    # metadatas = [c["metadata"] for c in chunks]
+    # ids = [c["metadata"]["id"] for c in chunks]
 
     # 6. DB 저장 (Upsert: 없으면 추가, 있으면 업데이트)
     print(f"[*] {len(ids)}개의 조각을 벡터화하여 DB에 저장 중...")
