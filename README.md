@@ -45,8 +45,10 @@ python3 ./src/main.py
 ```
 
 ## 🛠️ 그외 스크립트 설명
+
 `./src/parser.py`: 출제 날짜 추출 스크립트
 `search_test.py`: vector_store.py 실행 후 벡터화 확인 테스트 질문 (정상 답변: [1순위] ID: 201 '사회 공학' 이후 3순위까지 답변)
+
 ---
 
 ## 🚀 Key Features & Pipeline
