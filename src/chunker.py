@@ -7,12 +7,12 @@ import os
 def chunk_pdf_text(full_text, valid_dates):
     """
     full_text: pdfplumber로 추출한 전체 텍스트
-    valid_dates: 아까 추출한 34개의 기출 날짜 세트 (set)
+    valid_dates: 추출한 34개의 기출 날짜 세트 (set)
     """
 
     full_text = full_text.replace('\x07', ' ')
     # 1. 소제목(001) 위치만 먼저 찾습니다. (이건 매우 빠릅니다)
-    section_pattern = re.compile(r'(?:^|\n)(\d{3})\s+(.+?)\s+([A-C])(?:\s|\n|$)')
+    section_pattern = re.compile(r'(?:^|\n)(\d{3})\s+([^\n]+?)\s+([A-C])(?:\s|\n|$)')
     matches = list(section_pattern.finditer(full_text))
     chunks = []
 
@@ -20,13 +20,13 @@ def chunk_pdf_text(full_text, valid_dates):
         # 2. 이번 섹션의 시작점 결정
         # 기본값은 소제목 시작점이지만, 그 윗부분(약 100자 정도)에 날짜가 있는지 확인합니다.
         current_match_start = matches[i].start()
-        lookback_window = full_text[max(0, current_match_start-150):current_match_start]
+        lookback_window = full_text[max(0, current_match_start-50):current_match_start]
         
         # 윗부분에서 가장 먼저 나오는 날짜의 위치를 찾음
         date_matches = list(re.finditer(r'\d{2}\.(?:1[0-2]|[1-9])', lookback_window))
         if date_matches:
             # 날짜가 있다면 그 날짜의 시작점으로 start_idx를 당깁니다.
-            start_idx = max(0, current_match_start - 150) + date_matches[0].start()
+            start_idx = max(0, current_match_start - 50) + date_matches[0].start()
         else:
             start_idx = current_match_start
 
@@ -34,10 +34,10 @@ def chunk_pdf_text(full_text, valid_dates):
         if i + 1 < len(matches):
             next_match_start = matches[i+1].start()
             # 다음 섹션 윗부분에 날짜가 있는지 또 확인해서 그 전까지만 끊음
-            next_lookback = full_text[max(0, next_match_start-150):next_match_start]
+            next_lookback = full_text[max(0, next_match_start-50):next_match_start]
             next_date_matches = list(re.finditer(r'\d{2}\.(?:1[0-2]|[1-9])', next_lookback))
             if next_date_matches:
-                end_idx = max(0, next_match_start - 150) + next_date_matches[0].start()
+                end_idx = max(0, next_match_start - 50) + next_date_matches[0].start()
             else:
                 end_idx = next_match_start
         else:
