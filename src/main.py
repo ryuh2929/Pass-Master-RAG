@@ -3,6 +3,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 from openai import OpenAI
 from dotenv import load_dotenv
+from analyzer import StatsAnalyzer
 
 load_dotenv()
 
@@ -96,6 +97,49 @@ def get_rag_response(query):
 
     return response.choices[0].message.content
 
+# analyzer 인스턴스 생성
+analyzer = StatsAnalyzer()
+
+def is_statistical_query(query):
+    # 통계 의도를 파악하는 키워드 정의
+    keywords = ['순위', '가장 많이', '빈출', 'TOP', '통계', '중요한']
+    return any(kw in query for kw in keywords)
+
+def get_stats_response(query):
+    """통계 기반 답변 생성"""
+    top_data = analyzer.get_top_n(5) # 상위 5개 추출
+    
+    # LLM에게 전달할 통계용 시스템 프롬프트
+    stats_system_prompt = """
+    당신은 '정처기 데이터 분석관'입니다. 
+    제공된 통계 데이터를 바탕으로 출제 경향을 분석하여 보고서 형식으로 답변하세요.
+    - 순위와 출제 횟수를 명확히 표기하세요.
+    - 학습자가 어떤 파트를 집중적으로 공부해야 할지 전략을 제시하세요.
+    """
+    
+    context = "다음은 기출 데이터 통계입니다:\n"
+    for i, item in enumerate(top_data, 1):
+        # 계층 구조 반영: item['metadata']에서 추출
+        meta = item.get('metadata', {})
+        item_id = meta.get('id', 'N/A')
+        item_title = meta.get('title', '제목 없음')
+        count = meta.get('occurrence_count', 0)
+        importance = meta.get('importance', '미정')
+        
+        context += f"{i}위. [ID: {item_id}] {item_title} - {count}회 출제 (중요도: {importance})\n"
+
+    response = llm_client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": stats_system_prompt},
+            {"role": "user", "content": f"질문: {query}\n\n{context}"}
+        ],
+        temperature=0.1
+    )
+    return response.choices[0].message.content
+
+
+
 if __name__ == "__main__":
     print("="*50)
     print(" 정처기 합격 마스터 RAG 챗봇 초기화 완료")
@@ -107,8 +151,13 @@ if __name__ == "__main__":
         if user_input.lower() == 'exit':
             break
             
-        try:
-            answer = get_rag_response(user_input)
+        try:# 의도 파악 로직 (Intent Routing)
+            if is_statistical_query(user_input):
+                print("[*] 통계 분석 모드로 답변을 생성합니다...")
+                answer = get_stats_response(user_input)
+            else:
+                answer = get_rag_response(user_input)
+                
             print(f"\n[A] 답변:\n{answer}")
             print("-" * 50)
         except Exception as e:
