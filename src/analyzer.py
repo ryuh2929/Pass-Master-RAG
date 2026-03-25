@@ -12,7 +12,12 @@ class StatsAnalyzer:
 
     def get_top_n(self, n=5):
         # 출제 횟수 기준 상위 N개 추출
-        sorted_data = sorted(self.data, key=lambda x: x.get('occurrence_count', 0), reverse=True)
+        # item['metadata']['occurrence_count']를 기준으로 정렬
+        sorted_data = sorted(
+            self.data, 
+            key=lambda x: x.get('metadata', {}).get('occurrence_count', 0), 
+            reverse=True
+        )
 
         # 특정 카테고리(필기/실기 등) 필터링 로직 확장 가능
         return sorted_data[:n]
