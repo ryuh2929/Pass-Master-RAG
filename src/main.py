@@ -33,24 +33,38 @@ def get_rag_response(query):
         embedding_function=openai_ef
     )
 
-    # 유사도 높은 상위 2개 섹션 추출 (너무 많으면 비용 상승 및 혼란)
+    # 유사도 높은 상위 5개 섹션 추출 (너무 많으면 비용 상승 및 혼란)
     results = collection.query(
         query_texts=[query],
-        n_results=2
+        n_results=5  # 결과 개수를 조금 넉넉히 가져온 뒤
     )
 
     # 검색된 내용이 없으면 조기 종료
     if not results['documents'][0]:
         return "죄송합니다. 해당 내용에 대한 기출 데이터가 없습니다."
+    
+    # [Re-ranking 로직] 제목에 검색어가 포함된 것을 리스트 최상단으로 이동
+    docs = results['documents'][0]
+    metas = results['metadatas'][0]
+
+    combined = list(zip(docs, metas))
+    # 제목(title)에 검색어가 포함되어 있으면 우선순위(0), 아니면 (1)로 정렬
+    clean_query = query.replace(" ", "")
+    combined.sort(key=lambda x: 0 if clean_query in x[1].get('title', '').replace(" ", "") else 1)
+
+    # 상위 2개 추출
+    final_docs = [c[0] for c in combined[:2]]
+    final_metas = [c[1] for c in combined[:2]]
 
     # --------------------------------------------------
     # 단계 2: 프롬프트 구성 (Prompt Engineering)
     # --------------------------------------------------
     # 검색된 데이터를 GPT가 읽기 좋은 '문맥(Context)'으로 변환
     context = ""
-    for i in range(len(results['documents'][0])):
-        doc = results['documents'][0][i]
-        meta = results['metadatas'][0][i]
+    # results['documents'][0] 대신 정렬된 final_docs를 사용
+    for i in range(len(final_docs)):
+        doc = final_docs[i]
+        meta = final_metas[i]
         context += f"[참고 자료 {i+1}]\n"
         context += f"ID: {meta['id']} | 제목: {meta['title']} | 중요도: {meta['importance']}\n"
         context += f"출제 횟수: {meta['occurrence_count']}회 | 기출 날짜: {', '.join(meta['exam_dates'])}\n"
