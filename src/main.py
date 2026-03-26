@@ -76,13 +76,14 @@ def get_rag_response(query):
         
         # 실기 기록 여부에 따른 텍스트 생성
         if actual_practical_dates:
-            practical_info = f"실기 출제 기록 있음 ({', '.join(actual_practical_dates)})"
+            practical_info = f"실기 출제 기록 있음 (해당 날짜: {', '.join(actual_practical_dates)})"
         else:
             practical_info = "실기 출제 기록 없음 (필기 전용)"
 
         context += f"[참고 자료 {i+1}]\n"
-        context += f"ID: {meta['id']} | 제목: {meta['title']} | 중요도: {meta['importance']} | 구분: {practical_info}\n"
-        context += f"출제 횟수: {meta['occurrence_count']}회 | 기출 날짜: {', '.join(meta['exam_dates'])}\n"
+        context += f"ID: {meta['id']} | 제목: {meta['title']} | 중요도: {meta['importance']}\n"
+        context += f"구분: {practical_info}\n"
+        context += f"전체(필기 포함) 기출 횟수: {meta['occurrence_count']}회 | 전체(필기 포함) 기출 날짜: {', '.join(meta['exam_dates'])}\n"
         context += f"내용: {doc}\n\n"
 
     # 시스템 프롬프트: GPT의 역할과 규칙 정의 (핵심!)
