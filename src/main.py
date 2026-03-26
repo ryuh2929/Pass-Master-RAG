@@ -49,8 +49,8 @@ def get_rag_response(query):
 
     combined = list(zip(docs, metas))
     # 제목(title)에 검색어가 포함되어 있으면 우선순위(0), 아니면 (1)로 정렬
-    clean_query = query.replace(" ", "")
-    combined.sort(key=lambda x: 0 if clean_query in x[1].get('title', '').replace(" ", "") else 1)
+    clean_query = query.replace(" ", "").lower() #공백 제거, 소문자 변환
+    combined.sort(key=lambda x: 0 if clean_query in x[1].get('title', '').replace(" ", "").lower() else 1)
 
     # 상위 2개 추출
     final_docs = [c[0] for c in combined[:2]]
