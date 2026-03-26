@@ -64,7 +64,7 @@ def chunk_pdf_text(full_text, valid_dates):
                 "importance": importance,
                 "exam_dates": actual_exam_dates,
                 "occurrence_count": len(actual_exam_dates),
-                "is_practical": any(d in ['20.5','20.7','20.10','20.11','21.4','21.7','21.10','22.5','22.10','23.4','23.10','24.4','24.10','25.4','25.7','25.11'] for d in actual_exam_dates) # 실기 날짜 포함 여부
+                "is_practical": any(d in ['20.5','20.7','20.10','20.11','21.4','21.7','21.10','22.5','22.10','23.4','23.10','24.4','24.7', '24.10','25.4','25.7','25.11'] for d in actual_exam_dates) # 실기 날짜 포함 여부
             }
         })
 
