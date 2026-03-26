@@ -61,12 +61,27 @@ def get_rag_response(query):
     # --------------------------------------------------
     # 검색된 데이터를 GPT가 읽기 좋은 '문맥(Context)'으로 변환
     context = ""
+    
+    # 실기 시험 날짜 리스트
+    PRACTICAL_DATES = ['20.5', '20.7', '20.10', '20.11', '21.4', '21.7', '21.10', '22.5', '22.10', '23.4', '23.10', '24.4', '24.10', '25.4', '25.7', '25.11']
+
     # results['documents'][0] 대신 정렬된 final_docs를 사용
     for i in range(len(final_docs)):
         doc = final_docs[i]
         meta = final_metas[i]
+
+        # 전체 날짜 중 실기 날짜만 필터링
+        all_dates = meta.get('exam_dates', [])
+        actual_practical_dates = [d for d in all_dates if d in PRACTICAL_DATES]
+        
+        # 실기 기록 여부에 따른 텍스트 생성
+        if actual_practical_dates:
+            practical_info = f"실기 출제 기록 있음 ({', '.join(actual_practical_dates)})"
+        else:
+            practical_info = "실기 출제 기록 없음 (필기 전용)"
+
         context += f"[참고 자료 {i+1}]\n"
-        context += f"ID: {meta['id']} | 제목: {meta['title']} | 중요도: {meta['importance']}\n"
+        context += f"ID: {meta['id']} | 제목: {meta['title']} | 중요도: {meta['importance']} | 구분: {practical_info}\n"
         context += f"출제 횟수: {meta['occurrence_count']}회 | 기출 날짜: {', '.join(meta['exam_dates'])}\n"
         context += f"내용: {doc}\n\n"
 
