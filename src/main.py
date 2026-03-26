@@ -141,25 +141,35 @@ def is_statistical_query(query):
     return any(kw in query for kw in keywords)
 
 def get_stats_response(query):
-    """통계 기반 답변 생성"""
-    top_data = analyzer.get_top_n(5) # 상위 5개 추출
+    """통계 기반 답변 생성 (실기/전체 모드 자동 분기)"""
+    # 질문에 '실기'가 포함 여부 판단
+    is_practical_mode = '실기' in query
+
+    # 상위 5개 추출
+    top_data = analyzer.get_top_n(5, is_practical_only=is_practical_mode)
+
+    mode_text = "실기 시험" if is_practical_mode else "전체(필기+실기)"
     
     # LLM에게 전달할 통계용 시스템 프롬프트
     stats_system_prompt = """
     당신은 '정처기 데이터 분석관'입니다. 
-    제공된 통계 데이터를 바탕으로 출제 경향을 분석하여 보고서 형식으로 답변하세요.
+    제공된 [{mode_text}] 기준 통계 데이터를 바탕으로 출제 경향을 분석하여 보고서 형식으로 답변하세요.
     - 순위와 출제 횟수를 명확히 표기하세요.
-    - 각 순위의 제목 출력 시, 반드시 제목 바로 옆에 ID를 붙여서 표기하세요.
+    - 제목 바로 옆에 [ID: 번호]를 반드시 표기하세요.
     - 학습자가 어떤 파트(ID)를 집중적으로 공부해야 할지 전략을 제시하세요.
     """
     
-    context = "다음은 기출 데이터 통계입니다:\n"
+    context = f"다음은 {mode_text} 기출 데이터 통계입니다:\n"
     for i, item in enumerate(top_data, 1):
         # 계층 구조 반영: item['metadata']에서 추출
         meta = item.get('metadata', {})
         item_id = meta.get('id', 'N/A')
         item_title = meta.get('title', '제목 없음')
-        count = meta.get('occurrence_count', 0)
+        if is_practical_mode:
+            # 실기 모드일 경우 위에서 계산한 _temp_count를 사용
+            count = item.get('_temp_count', 0)
+        else:
+            count = meta.get('occurrence_count', 0)
         importance = meta.get('importance', '미정')
         
         context += f"{i}위. [ID: {item_id}] {item_title} - {count}회 출제 (중요도: {importance})\n"
