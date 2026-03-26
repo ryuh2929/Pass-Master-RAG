@@ -63,7 +63,7 @@ def get_rag_response(query):
     context = ""
     
     # 실기 시험 날짜 리스트
-    PRACTICAL_DATES = ['20.5', '20.7', '20.10', '20.11', '21.4', '21.7', '21.10', '22.5', '22.10', '23.4', '23.10', '24.4', '24.10', '25.4', '25.7', '25.11']
+    PRACTICAL_DATES = ['20.5', '20.7', '20.10', '20.11', '21.4', '21.7', '21.10', '22.5', '22.10', '23.4', '23.10', '24.4', '24.7', '24.10', '25.4', '25.7', '25.11']
 
     # results['documents'][0] 대신 정렬된 final_docs를 사용
     for i in range(len(final_docs)):
@@ -160,14 +160,14 @@ def get_stats_response(query):
     """
     
     context = f"다음은 {mode_text} 기출 데이터 통계입니다:\n"
-    for i, item in enumerate(top_data, 1):
+    for i, (item, count) in enumerate(top_data, 1):
         # 계층 구조 반영: item['metadata']에서 추출
         meta = item.get('metadata', {})
         item_id = meta.get('id', 'N/A')
         item_title = meta.get('title', '제목 없음')
         if is_practical_mode:
             # 실기 모드일 경우 위에서 계산한 _temp_count를 사용
-            count = item.get('_temp_count', 0)
+            count
         else:
             count = meta.get('occurrence_count', 0)
         importance = meta.get('importance', '미정')
