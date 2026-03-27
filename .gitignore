@@ -4,15 +4,12 @@
 temp.py
 # --- Project Specific Custom Rules ---
 # PDF 원본 데이터 
-data/
 *.pdf
 
 # 추출 결과물 및 DB
 outputs/
 *.db
 *.sqlite
-db/
-*.sqlite3
 
 # API 키 및 환경 변수
 .env
