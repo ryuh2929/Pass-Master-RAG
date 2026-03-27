@@ -3,8 +3,8 @@ import chromadb
 from chromadb.utils import embedding_functions
 from openai import OpenAI
 from dotenv import load_dotenv
-from analyzer import StatsAnalyzer
-from vector_store import hybrid_query
+from src.analyzer import StatsAnalyzer
+from src.vector_store import hybrid_query
 
 load_dotenv()
 
