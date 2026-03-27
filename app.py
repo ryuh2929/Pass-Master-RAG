@@ -1,5 +1,5 @@
 import streamlit as st
-from main import get_rag_response, get_stats_response, is_statistical_query
+from src.main import get_rag_response, get_stats_response, is_statistical_query
 
 # 웹 페이지 설정
 st.set_page_config(page_title="정처기 합격 마스터", page_icon="🎓")
