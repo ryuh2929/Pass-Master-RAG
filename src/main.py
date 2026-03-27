@@ -30,10 +30,15 @@ def get_rag_response(query):
     # --------------------------------------------------
     # 단계 1: 데이터 검색 (Retrieval)
     # --------------------------------------------------
-    collection = chroma_client.get_collection(
+    # get_collection 대신 안전하게 생성/가져오기 사용
+    collection = chroma_client.get_or_create_collection(
         name="juchungki_exam",
         embedding_function=openai_ef
     )
+
+    # 만약 데이터가 하나도 없다면 안내 메시지 출력
+    if collection.count() == 0:
+        return "현재 데이터베이스에 기출 데이터가 로드되지 않았습니다. 관리자에게 문의하세요."
 
     # 유사도 높은 상위 5개 섹션 추출 (너무 많으면 비용 상승 및 혼란)
     results = hybrid_query(
