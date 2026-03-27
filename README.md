@@ -15,6 +15,9 @@
 ## 💻 실제 구동 화면
 <img width="862" height="267" alt="image" src="https://github.com/user-attachments/assets/a860ea72-97cc-4a52-a156-1dfe89dc5c23" />
 <img width="896" height="618" alt="image" src="https://github.com/user-attachments/assets/f8b476c7-3f3c-4fc9-a235-86d00cd8c6a6" />
+<img width="895" height="297" alt="image" src="https://github.com/user-attachments/assets/796c2716-e210-4993-8115-c8466f78c9a3" />
+<img width="888" height="246" alt="image" src="https://github.com/user-attachments/assets/100c58ab-1339-4b87-9c23-d685e1d36693" />
+
 
 ## ⚙️ 세팅 방법
 1. 가상환경 생성 및 활성화(Windows):
