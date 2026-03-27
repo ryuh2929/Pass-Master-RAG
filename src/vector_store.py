@@ -70,5 +70,46 @@ def ingest_data():
 
     print(f"[*] 저장 완료! DB 경로: {DB_PATH}")
 
+# --------------------------------------------------
+# [추가] 하이브리드 검색 함수 (Read 로직)
+# --------------------------------------------------
+def hybrid_query(collection, query_text, n_results=5):
+    """
+    벡터 검색(의미) + 키워드 매칭(고유명사) 가중치를 결합한 검색
+    """
+    # 1. 벡터 검색 수행 (임베딩 유사도 기반)
+    vector_results = collection.query(
+        query_texts=[query_text],
+        n_results=n_results * 2  # 후보군을 넓게 뽑아 리랭킹 준비
+    )
+    
+    docs = vector_results['documents'][0]
+    metas = vector_results['metadatas'][0]
+    distances = vector_results['distances'][0]
+    
+    # 2. 키워드 부스팅 (Keyword Boosting)
+    # 질문의 키워드가 문서에 직접 포함되면 거리 점수를 깎아서(유사도 높임) 순위 상승
+    keywords = query_text.split()
+    hybrid_candidates = []
+    
+    for i, doc in enumerate(docs):
+        score = distances[i] # 기본 거리값 (작을수록 좋음)
+        
+        # 키워드 매칭 시 보너스 (가중치 0.1은 테스트하며 조절)
+        match_count = sum(1 for kw in keywords if kw.lower() in doc.lower())
+        score -= (match_count * 0.1) 
+        
+        hybrid_candidates.append((doc, metas[i], score))
+    
+    # 3. 보정된 점수 기준으로 재정렬
+    hybrid_candidates.sort(key=lambda x: x[2])
+    
+    # 4. 최종 결과 포맷팅 (ChromaDB 결과 형식과 유사하게 반환)
+    return {
+        'documents': [[x[0] for x in hybrid_candidates[:n_results]]],
+        'metadatas': [[x[1] for x in hybrid_candidates[:n_results]]],
+        'scores': [[x[2] for x in hybrid_candidates[:n_results]]]
+    }
+
 if __name__ == "__main__":
     ingest_data()
