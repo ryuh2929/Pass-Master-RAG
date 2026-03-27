@@ -4,6 +4,7 @@ from chromadb.utils import embedding_functions
 from openai import OpenAI
 from dotenv import load_dotenv
 from analyzer import StatsAnalyzer
+from vector_store import hybrid_query
 
 load_dotenv()
 
@@ -34,8 +35,9 @@ def get_rag_response(query):
     )
 
     # 유사도 높은 상위 5개 섹션 추출 (너무 많으면 비용 상승 및 혼란)
-    results = collection.query(
-        query_texts=[query],
+    results = hybrid_query(
+        collection=collection,
+        query_text=query,
         n_results=5  # 결과 개수를 조금 넉넉히 가져온 뒤
     )
 
