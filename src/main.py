@@ -10,7 +10,8 @@ load_dotenv()
 
 # 1. 환경 변수 및 클라이언트 설정
 API_KEY = os.getenv("OPENAI_API_KEY")
-DB_PATH = os.getenv("DB_PATH", "db/pass_master_db")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, "db", "pass_master_db")
 
 if not API_KEY:
     raise ValueError("[!] .env 파일에 OPENAI_API_KEY를 설정하세요.")
