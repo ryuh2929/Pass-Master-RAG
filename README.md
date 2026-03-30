@@ -18,6 +18,10 @@
 <img width="895" height="297" alt="image" src="https://github.com/user-attachments/assets/796c2716-e210-4993-8115-c8466f78c9a3" />
 <img width="888" height="246" alt="image" src="https://github.com/user-attachments/assets/100c58ab-1339-4b87-9c23-d685e1d36693" />
 
+## 💬 Streamlit 페이지
+<img width="787" height="819" alt="image" src="https://github.com/user-attachments/assets/d4bd8f67-8ce8-465e-95b0-ce0fbc1fbc76" />
+<img width="775" height="489" alt="image" src="https://github.com/user-attachments/assets/cc7d4207-9abb-43ee-8c61-416eef04d8e8" />
+<img width="779" height="263" alt="image" src="https://github.com/user-attachments/assets/3fcfb33c-3192-4f1a-98f9-ebfcc00d101d" />
 
 ## ⚙️ 세팅 방법
 1. 가상환경 생성 및 활성화(Windows):
