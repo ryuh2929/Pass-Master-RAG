@@ -52,7 +52,6 @@
    ```
 4. 데이터 준비: `/data` 폴더에 pdf 파일 넣기
 
----
 
 ## 🏃 실행 순서
 ```bash
@@ -69,14 +68,12 @@ python3 ./src/vector_store.py
 python3 ./src/main.py
 ```
 
----
 
 ## ✨ Streamlit 실행 (로컬)
 ```bash
 streamlit run app.py
 ```
 
----
 
 ## 🔍 그 외 스크립트 설명
 
