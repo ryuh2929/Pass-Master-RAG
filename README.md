@@ -31,6 +31,8 @@
 
 <img width="779" height="263" alt="image" src="https://github.com/user-attachments/assets/3fcfb33c-3192-4f1a-98f9-ebfcc00d101d" />
 
+---
+
 ## ⚙️ 세팅 방법
 1. 가상환경 생성 및 활성화(Windows):
    ```bash
