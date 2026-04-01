@@ -71,6 +71,11 @@ python3 ./src/main.py
 
 ---
 
+## ✨ Streamlit 실행 (로컬)
+```bash
+streamlit run app.py
+```
+
 ## 🔍 그 외 스크립트 설명
 
 `./src/parser.py`: 출제 날짜 추출 스크립트
