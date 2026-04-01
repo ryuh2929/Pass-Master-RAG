@@ -18,6 +18,8 @@
 <img width="895" height="297" alt="image" src="https://github.com/user-attachments/assets/796c2716-e210-4993-8115-c8466f78c9a3" />
 <img width="888" height="246" alt="image" src="https://github.com/user-attachments/assets/100c58ab-1339-4b87-9c23-d685e1d36693" />
 
+---
+
 ## 💬 Streamlit 페이지
 <img width="787" height="819" alt="image" src="https://github.com/user-attachments/assets/d4bd8f67-8ce8-465e-95b0-ce0fbc1fbc76" />
 
@@ -48,6 +50,8 @@
    ```
 4. 데이터 준비: `/data` 폴더에 pdf 파일 넣기
 
+---
+
 ## 🏃 실행 순서
 ```bash
 # 1. PDF 파일을 텍스트로 파싱 및 JSON 형식으로 /data/processed_chunks.json에 저장
@@ -62,6 +66,8 @@ python3 ./src/vector_store.py
 # 4. RAG 실행
 python3 ./src/main.py
 ```
+
+---
 
 ## 🔍 그 외 스크립트 설명
 
@@ -87,8 +93,6 @@ python3 ./src/main.py
 * **의미 기반 검색:** 질문의 의미를 분석하여 가장 연관성 높은 K개 섹션 추출
 * **컨텍스트 강화:** 검색된 지식 파편과 메타데이터를 결합하여 LLM에 전달
 * **답변 생성:** GPT-4o를 통해 근거 데이터에 기반한 답변 생성 (Hallucination 최소화)
-
-
 
 ---
 
