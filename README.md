@@ -20,7 +20,13 @@
 
 ## 💬 Streamlit 페이지
 <img width="787" height="819" alt="image" src="https://github.com/user-attachments/assets/d4bd8f67-8ce8-465e-95b0-ce0fbc1fbc76" />
+
+---
+
 <img width="775" height="489" alt="image" src="https://github.com/user-attachments/assets/cc7d4207-9abb-43ee-8c61-416eef04d8e8" />
+
+---
+
 <img width="779" height="263" alt="image" src="https://github.com/user-attachments/assets/3fcfb33c-3192-4f1a-98f9-ebfcc00d101d" />
 
 ## ⚙️ 세팅 방법
