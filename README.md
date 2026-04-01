@@ -5,31 +5,41 @@
 
 ---
 
-## 🛠️ 기술 스택
-* **Language:** Python 3.14.0
-* **Vector DB:** ChromaDB (Persistent Storage)
-* **LLM:** OpenAI GPT-4o / text-embedding-3-small
-* **Environment:** `python-dotenv`, `pdfplumber`
-
----
-## 💻 실제 구동 화면
-<img width="862" height="267" alt="image" src="https://github.com/user-attachments/assets/a860ea72-97cc-4a52-a156-1dfe89dc5c23" />
-<img width="896" height="618" alt="image" src="https://github.com/user-attachments/assets/f8b476c7-3f3c-4fc9-a235-86d00cd8c6a6" />
-<img width="895" height="297" alt="image" src="https://github.com/user-attachments/assets/796c2716-e210-4993-8115-c8466f78c9a3" />
-<img width="888" height="246" alt="image" src="https://github.com/user-attachments/assets/100c58ab-1339-4b87-9c23-d685e1d36693" />
-
----
-
 ## 💬 Streamlit 페이지
 <img width="787" height="819" alt="image" src="https://github.com/user-attachments/assets/d4bd8f67-8ce8-465e-95b0-ce0fbc1fbc76" />
 
 ---
 
-<img width="775" height="489" alt="image" src="https://github.com/user-attachments/assets/cc7d4207-9abb-43ee-8c61-416eef04d8e8" />
+<img width="787" height="789" alt="image" src="https://github.com/user-attachments/assets/7f6cef9d-58c0-482d-ac7f-efffc42e94cf" />
 
 ---
 
-<img width="779" height="263" alt="image" src="https://github.com/user-attachments/assets/3fcfb33c-3192-4f1a-98f9-ebfcc00d101d" />
+<img width="770" height="348" alt="image" src="https://github.com/user-attachments/assets/235685ee-804f-4ad7-bf5a-5a6743c4259d" />
+
+---
+
+## 💻 터미널 구동 화면
+<img width="834" height="299" alt="image" src="https://github.com/user-attachments/assets/5fbc6f47-1cbc-4150-bb7d-d4c99ab3d5fb" />
+<img width="896" height="618" alt="image" src="https://github.com/user-attachments/assets/f8b476c7-3f3c-4fc9-a235-86d00cd8c6a6" />
+
+---
+
+## 🛠️ 기술 스택
+### 🔹 Language & Environment
+- **Python 3.14.0+**: 메인 개발 언어 및 데이터 전처리
+- **python-dotenv**: 환경 변수 및 API Key 관리
+- **pdfplumber**: PDF 텍스트 추출 및 구조화
+
+### 🔹 AI & Data Pipeline
+- **LLM**: OpenAI **GPT-4o** (추론 및 답변 생성)
+- **Embedding**: **text-embedding-3-small** (고성능 벡터 임베딩)
+- **Vector DB**: **ChromaDB** (Persistent Storage를 통한 로컬 데이터 영구 저장)
+- **RAG Logic**: BM25(키워드) + Vector(시맨틱) **하이브리드 검색** 구현
+
+### 🔹 Deployment & UI
+- **Frontend**: **Streamlit** (대화형 데이터 분석 웹 인터페이스)
+- **Cloud**: **Streamlit Cloud** (지속적 배포 및 호스팅)
+- **Version Control**: Git / GitHub (브랜치 기반 데이터 격리 관리)
 
 ---
 
@@ -52,24 +62,31 @@
    ```
 4. 데이터 준비: `/data` 폴더에 pdf 파일 넣기
 
----
 
 ## 🏃 실행 순서
+
+모든 명령은 프로젝트 **루트 디렉토리(`Pass-Master-RAG`)**에서 실행해야 합니다.
+
 ```bash
 # 1. PDF 파일을 텍스트로 파싱 및 JSON 형식으로 /data/processed_chunks.json에 저장
-python3 ./src/chunker.py
+python3 -m src.chunker
 
 # 2. 파싱된 데이터 검증 (누락 및 중복 ID 체크 - 선택 사항)
-python3 ./src/check_ids.py
+python3 -m src.check_ids
 
 # 3. JSON 데이터를 vector DB로 /db/pass_master_db/에 저장
-python3 ./src/vector_store.py
+python3 -m src.vector_store
 
 # 4. RAG 실행
-python3 ./src/main.py
+python3 -m src.main
 ```
 
----
+
+## ✨ Streamlit 실행 (로컬)
+```bash
+streamlit run app.py
+```
+
 
 ## 🔍 그 외 스크립트 설명
 
@@ -107,8 +124,14 @@ python3 ./src/main.py
 
 ---
 
-## 📝 향후 개선 계획
-* **하이브리드 검색:** 키워드(BM25)와 벡터 검색을 혼합하여 고유 명사 검색률 향상
-* **통계 전용 라우터:** "가장 많이 출제된 것"과 같은 통계성 질문 시 메타데이터를 직접 집계하여 답변하는 로직 추가
-* **웹 UI:** Streamlit을 활용한 사용자 친화적 인터페이스 구축
+## ✅ 향후 개선 계획
+### 🔹 1단계: 핵심 엔진 구축 (완료)
+* [x] ~~**하이브리드 검색:** 키워드(BM25)와 벡터 검색을 혼합하여 고유 명사 검색률 향상~~ (추가 완료)
+* [x] ~~**통계 전용 라우터:** "가장 많이 출제된 것"과 같은 통계성 질문 시 메타데이터를 직접 집계하여 답변하는 로직 추가~~ (추가 완료)
+* [x] ~~**웹 UI:** Streamlit을 활용한 사용자 친화적 인터페이스 구축~~ (추가 완료)
+
+### 🔸 2단계: 시스템 고도화 (계획)
+- [ ] **LangGraph 리팩토링**: 에이전틱 워크플로우를 통한 답변 자가 검수 로직 도입
+- [ ] **RAGas 정량 평가**: 답변의 충실도 및 관련성 지표 측정 및 데이터셋 구축
+- [ ] **멀티 세션 관리**: 사용자별 대화 히스토리 저장 및 맥락 유지 기능 추가
 
