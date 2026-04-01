@@ -10,9 +10,6 @@ temp.py
 outputs/
 *.db
 *.sqlite
-*.json
-db/
-*.sqlite3
 
 # API 키 및 환경 변수
 .env
