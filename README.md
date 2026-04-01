@@ -64,15 +64,18 @@
 
 
 ## 🏃 실행 순서
+
+모든 명령은 프로젝트 **루트 디렉토리(`Pass-Master-RAG`)**에서 실행해야 합니다.
+
 ```bash
 # 1. PDF 파일을 텍스트로 파싱 및 JSON 형식으로 /data/processed_chunks.json에 저장
-python3 ./src/chunker.py
+python3 -m src.chunker
 
 # 2. 파싱된 데이터 검증 (누락 및 중복 ID 체크 - 선택 사항)
-python3 ./src/check_ids.py
+python3 -m src.check_ids
 
 # 3. JSON 데이터를 vector DB로 /db/pass_master_db/에 저장
-python3 ./src/vector_store.py
+python3 -m src.vector_store
 
 # 4. RAG 실행
 python3 -m src.main
