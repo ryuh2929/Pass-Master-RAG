@@ -6,10 +6,21 @@
 ---
 
 ## 🛠️ 기술 스택
-* **Language:** Python 3.14.0
-* **Vector DB:** ChromaDB (Persistent Storage)
-* **LLM:** OpenAI GPT-4o / text-embedding-3-small
-* **Environment:** `python-dotenv`, `pdfplumber`
+### 🔹 Language & Environment
+- **Python 3.14.0+**: 메인 개발 언어 및 데이터 전처리
+- **python-dotenv**: 환경 변수 및 API Key 관리
+- **pdfplumber**: PDF 텍스트 추출 및 구조화
+
+### 🔹 AI & Data Pipeline
+- **LLM**: OpenAI **GPT-4o** (추론 및 답변 생성)
+- **Embedding**: **text-embedding-3-small** (고성능 벡터 임베딩)
+- **Vector DB**: **ChromaDB** (Persistent Storage를 통한 로컬 데이터 영구 저장)
+- **RAG Logic**: BM25(키워드) + Vector(시맨틱) **하이브리드 검색** 구현
+
+### 🔹 Deployment & UI
+- **Frontend**: **Streamlit** (대화형 데이터 분석 웹 인터페이스)
+- **Cloud**: **Streamlit Cloud** (지속적 배포 및 호스팅)
+- **Version Control**: Git / GitHub (브랜치 기반 데이터 격리 관리)
 
 ---
 ## 💻 실제 구동 화면
