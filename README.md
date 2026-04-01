@@ -10,7 +10,7 @@
 
 ---
 
-<img width="775" height="489" alt="image" src="https://github.com/user-attachments/assets/cc7d4207-9abb-43ee-8c61-416eef04d8e8" />
+<img width="787" height="789" alt="image" src="https://github.com/user-attachments/assets/7f6cef9d-58c0-482d-ac7f-efffc42e94cf" />
 
 ---
 
@@ -21,8 +21,6 @@
 ## 💻 터미널 구동 화면
 <img width="834" height="299" alt="image" src="https://github.com/user-attachments/assets/5fbc6f47-1cbc-4150-bb7d-d4c99ab3d5fb" />
 <img width="896" height="618" alt="image" src="https://github.com/user-attachments/assets/f8b476c7-3f3c-4fc9-a235-86d00cd8c6a6" />
-<img width="895" height="297" alt="image" src="https://github.com/user-attachments/assets/796c2716-e210-4993-8115-c8466f78c9a3" />
-<img width="888" height="246" alt="image" src="https://github.com/user-attachments/assets/100c58ab-1339-4b87-9c23-d685e1d36693" />
 
 ---
 
@@ -77,7 +75,7 @@ python3 ./src/check_ids.py
 python3 ./src/vector_store.py
 
 # 4. RAG 실행
-python3 ./src/main.py
+python3 -m src.main
 ```
 
 
