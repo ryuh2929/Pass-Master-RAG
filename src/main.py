@@ -205,7 +205,7 @@ if __name__ == "__main__":
     print(" 정처기 합격 마스터 RAG 챗봇 초기화 완료")
     print("="*50)
 
-    while True:
+    while True: 
         print(" (종료하려면 'exit' 입력)")
         user_input = input("\n[Q] 질문을 입력하세요: ")
         if user_input.lower() == 'exit':
