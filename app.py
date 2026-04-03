@@ -17,7 +17,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # 사용자 입력 받기
-if prompt := st.chat_input("질문을 입력하세요 (예: 블랙박스 테스트에 대해 알려줘 test)"):
+if prompt := st.chat_input("질문을 입력하세요 (예: 블랙박스 테스트에 대해 알려줘)"):
     # 유저 메시지 표시 및 저장
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
