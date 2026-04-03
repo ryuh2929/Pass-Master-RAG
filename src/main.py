@@ -1,6 +1,7 @@
 import os
 import chromadb
 from chromadb.utils import embedding_functions
+import openai
 from openai import OpenAI
 from dotenv import load_dotenv
 from src.analyzer import StatsAnalyzer
@@ -211,7 +212,8 @@ if __name__ == "__main__":
         if user_input.lower() == 'exit':
             break
             
-        try:# 의도 파악 로직 (Intent Routing)
+        try:
+            # 의도 파악 로직
             if is_statistical_query(user_input):
                 print("[*] 통계 분석 모드로 답변을 생성합니다...")
                 answer = get_stats_response(user_input)
@@ -220,5 +222,12 @@ if __name__ == "__main__":
                 
             print(f"\n[A] 답변:\n{answer}")
             print("-" * 50)
+        except openai.RateLimitError:
+            print("[!] 오류: API 요청 한도가 초과되었습니다. 잠시 후 다시 시도하세요.")
+        except openai.AuthenticationError:
+            print("[!] 오류: API Key가 잘못되었습니다. .env 파일을 확인하세요.")
         except Exception as e:
-            print(f"[!] 오류 발생: {e}")
+            if "insufficient_quota" in str(e):
+                print("[!] 오류: OpenAI 계정 잔액이 부족합니다.")
+            else:
+                print(f"[!] 알 수 없는 오류 발생: {e}")
