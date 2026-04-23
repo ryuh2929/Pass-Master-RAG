@@ -20,6 +20,9 @@
 
 ## 💻 터미널 구동 화면
 <img width="834" height="299" alt="image" src="https://github.com/user-attachments/assets/5fbc6f47-1cbc-4150-bb7d-d4c99ab3d5fb" />
+
+---
+
 <img width="896" height="618" alt="image" src="https://github.com/user-attachments/assets/f8b476c7-3f3c-4fc9-a235-86d00cd8c6a6" />
 
 ---
